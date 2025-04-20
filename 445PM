@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en" class=""> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Range Calculator - Custom Themes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Define CSS Variables for Color Palettes */
+        :root {
+            /* Light Mode Palette */
+            --lm-bg: #fafafa;
+            --lm-container-bg: #e4e5f1;
+            --lm-border: #d2d3db;
+            --lm-text-secondary: #9394a5;
+            --lm-text-primary: #484b6a;
+            --lm-accent-blue: #3b82f6; /* Tailwind blue-500 */
+            --lm-accent-green: #16a34a; /* Tailwind green-600 */
+            --lm-accent-red: #ef4444;   /* Tailwind red-500 */
+            --lm-accent-gray: #6b7280; /* Tailwind gray-500 */
+            --lm-header-start: #1d4ed8; /* Tailwind blue-700 */
+            --lm-header-end: #3b82f6;   /* Tailwind blue-500 */
+            --lm-input-bg: #f9fafb; /* Default input bg */
+            --lm-input-focus-bg: #ffffff;
+            --lm-input-focus-shadow: rgba(59, 130, 246, 0.3);
+            --lm-score-bg: #eff6ff; /* Sky-50 equivalent */
+            --lm-score-border: #dbeafe; /* Sky-100 */
+            --lm-score-icon: #2563eb; /* Sky-600 */
+            --lm-score-heading: #1e3a8a; /* Sky-800 */
+            --lm-optgroup-bg: #f3f4f6;
+            --lm-optgroup-text: #4b5563;
+            --lm-icon-sun: #facc15; /* Tailwind yellow-400 */
+            --lm-icon-moon: #3b82f6; /* Tailwind blue-500 */
+
+
+            /* Dark Mode Palette */
+            --dm-bg: #0D0D0D;
+            --dm-container-bg: #1A1A1A; /* Slightly lighter than bg */
+            --dm-border: #2C2C2C; /* Slightly lighter than container */
+            --dm-text-primary: #FFFFFF;
+            --dm-text-secondary: #AAAAAA;
+            --dm-accent-green: #00FF85;
+            --dm-accent-blue: #1E90FF;
+            --dm-accent-red: #FF0099;
+            --dm-accent-gray: #555555; /* Darker gray for secondary buttons */
+            --dm-header-start: #1A1A1A;
+            --dm-header-end: #2C2C2C;
+            --dm-input-bg: #2C2C2C;
+            --dm-input-focus-bg: #1A1A1A;
+            --dm-input-focus-shadow: rgba(30, 144, 255, 0.4); /* Accent blue shadow */
+            --dm-score-bg: #2C2C2C;
+            --dm-score-border: #444444;
+            --dm-score-icon: var(--dm-accent-blue);
+            --dm-score-heading: var(--dm-text-primary);
+            --dm-optgroup-bg: #1A1A1A;
+            --dm-optgroup-text: var(--dm-text-secondary);
+            --dm-icon-sun: #facc15; /* Keep sun yellow */
+            --dm-icon-moon: #93c5fd; /* Lighter blue for dark mode - Tailwind blue-300 */
+
+
+            /* Transitions */
+            --transition-speed: 0.3s;
+            --transition-func: ease-in-out;
+        }
+
+        /* Apply base styles using variables */
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+            background-color: var(--lm-bg);
+            color: var(--lm-text-primary);
+            /* Subtle grid for light mode */
+            background-image: radial-gradient(circle, var(--lm-border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transition: background-color var(--transition-speed) var(--transition-func),
+                        color var(--transition-speed) var(--transition-func);
+            position: relative; /* Make body the positioning context for the absolute switch */
+        }
+
+        /* Apply dark mode styles using variables */
+        html.dark body {
+            background-color: var(--dm-bg);
+            color: var(--dm-text-primary);
+            /* Subtle grid for dark mode */
+            background-image: radial-gradient(circle, var(--dm-border) 1px, transparent 1px);
+        }
+
+        /* Container Styles */
+        .calculator-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--lm-container-bg);
+            border: 1px solid var(--lm-border);
+            transition: background-color var(--transition-speed) var(--transition-func),
+                        border-color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .calculator-container {
+             background-color: var(--dm-container-bg);
+             border-color: var(--dm-border);
+        }
+
+        /* Header Gradient */
+        .header-gradient {
+             background: linear-gradient(90deg, var(--lm-header-start) 0%, var(--lm-header-end) 100%);
+             transition: background var(--transition-speed) var(--transition-func);
+        }
+        html.dark .header-gradient {
+             background: linear-gradient(90deg, var(--dm-header-start) 0%, var(--dm-header-end) 100%);
+        }
+        /* Header Text & Icons */
+        .header-gradient h1, .header-gradient p, .header-gradient i { color: #ffffff; /* Keep white for contrast */ }
+        html.dark .header-gradient p { color: var(--dm-text-secondary); } /* Subtler text in dark header */
+
+        /* Labels */
+        label {
+            color: var(--lm-text-primary);
+            transition: color var(--transition-speed) var(--transition-func);
+        }
+        html.dark label { color: var(--dm-text-primary); }
+
+        /* Inputs & Selects */
+        input[type="number"], select {
+            background-color: var(--lm-input-bg);
+            border: 1px solid var(--lm-border);
+            color: var(--lm-text-primary);
+            border-radius: 0.5rem; /* Added border-radius */
+            padding: 0.75rem 1rem; /* Added padding */
+            width: 100%; /* Added width */
+            transition: background-color var(--transition-speed) var(--transition-func),
+                        border-color var(--transition-speed) var(--transition-func),
+                        color var(--transition-speed) var(--transition-func),
+                        box-shadow var(--transition-speed) var(--transition-func);
+        }
+        input::placeholder, select::placeholder { color: var(--lm-text-secondary); transition: color var(--transition-speed) var(--transition-func); }
+
+        html.dark input[type="number"], html.dark select {
+            background-color: var(--dm-input-bg);
+            border-color: var(--dm-border);
+            color: var(--dm-text-primary);
+        }
+        html.dark input::placeholder, html.dark select::placeholder { color: var(--dm-text-secondary); }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--lm-accent-blue);
+            box-shadow: 0 0 0 3px var(--lm-input-focus-shadow);
+            background-color: var(--lm-input-focus-bg);
+        }
+        html.dark input:focus, html.dark select:focus {
+            border-color: var(--dm-accent-blue);
+            box-shadow: 0 0 0 3px var(--dm-input-focus-shadow);
+            background-color: var(--dm-input-focus-bg);
+        }
+
+        /* Optgroups */
+        optgroup {
+            font-weight: bold;
+            font-style: italic;
+            background-color: var(--lm-optgroup-bg);
+            color: var(--lm-optgroup-text);
+        }
+        html.dark optgroup {
+            background-color: var(--dm-optgroup-bg);
+            color: var(--dm-optgroup-text);
+        }
+
+        /* Tabs */
+        .tab-button {
+            padding: 0.75rem 1rem; /* Added padding */
+            font-weight: 600; /* Added font-weight */
+            color: var(--lm-text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: color var(--transition-speed) var(--transition-func),
+                        border-color var(--transition-speed) var(--transition-func);
+        }
+        .tab-button:hover { color: var(--lm-accent-blue); }
+        .tab-button.active { color: var(--lm-accent-blue); border-bottom-color: var(--lm-accent-blue); }
+
+        html.dark .tab-button { color: var(--dm-text-secondary); }
+        html.dark .tab-button:hover { color: var(--dm-accent-blue); }
+        html.dark .tab-button.active { color: var(--dm-accent-blue); border-bottom-color: var(--dm-accent-blue); }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            background-color: var(--lm-border);
+            transition: background-color var(--transition-speed) var(--transition-func);
+            height: 8px; border-radius: 4px; margin: 0.5rem 0 2rem 0; overflow: hidden;
+        }
+        html.dark .progress-bar-container { background-color: var(--dm-border); }
+        .progress-bar {
+            background: linear-gradient(90deg, var(--lm-accent-blue) 0%, var(--lm-header-start) 100%);
+            transition: background var(--transition-speed) var(--transition-func), width 0.4s ease-in-out;
+            height: 100%; border-radius: 4px;
+        }
+        html.dark .progress-bar { background: linear-gradient(90deg, var(--dm-accent-blue) 0%, var(--dm-accent-blue) 100%); } /* Solid accent blue in dark */
+
+        /* Buttons */
+        button { transition: all 0.2s ease-in-out; border-radius: 0.5rem; }
+        .btn-primary { background-color: var(--lm-accent-blue); color: white; padding: 0.75rem 2rem; font-weight: bold; } /* Added padding/font-weight */
+        .btn-primary:hover { background-color: var(--lm-header-start); } /* Darker blue */
+        .btn-secondary { background-color: var(--lm-accent-gray); color: white; padding: 0.75rem 2rem; font-weight: bold; } /* Added padding/font-weight */
+        .btn-secondary:hover { background-color: var(--lm-text-primary); } /* Darker gray */
+        .btn-success { background-color: var(--lm-accent-green); color: white; padding: 0.75rem 2.5rem; font-weight: bold; } /* Added padding/font-weight */
+        .btn-success:hover { filter: brightness(0.9); }
+        .btn-reset { background-color: var(--lm-container-bg); color: var(--lm-text-primary); border: 1px solid var(--lm-border); padding: 0.5rem 1.5rem; font-weight: 500; } /* Added padding/font-weight */
+        .btn-reset:hover { background-color: var(--lm-border); }
+
+        html.dark .btn-primary { background-color: var(--dm-accent-blue); color: var(--dm-bg); } /* Dark text on bright button */
+        html.dark .btn-primary:hover { filter: brightness(1.2); }
+        html.dark .btn-secondary { background-color: var(--dm-accent-gray); color: var(--dm-text-primary); }
+        html.dark .btn-secondary:hover { filter: brightness(1.2); }
+        html.dark .btn-success { background-color: var(--dm-accent-green); color: var(--dm-bg); } /* Dark text on bright button */
+        html.dark .btn-success:hover { filter: brightness(1.2); }
+        html.dark .btn-reset { background-color: var(--dm-container-bg); color: var(--dm-text-primary); border: 1px solid var(--dm-border); }
+        html.dark .btn-reset:hover { background-color: var(--dm-border); }
+
+        /* Result Section */
+        #result {
+            margin-top: 2.5rem; padding: 2rem;
+            background: var(--lm-container-bg);
+            border: 1px solid var(--lm-border);
+            border-radius: 0.75rem; text-align: center; display: none;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: background-color var(--transition-speed) var(--transition-func),
+                        border-color var(--transition-speed) var(--transition-func);
+        }
+        html.dark #result {
+            background: var(--dm-container-bg);
+            border-color: var(--dm-border);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+        }
+        .result-salary-box {
+             background: linear-gradient(135deg, var(--lm-score-bg) 0%, #e0f2fe 100%); /* Keep light blue gradient */
+             padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--lm-score-border); margin-bottom: 1.5rem;
+             transition: background var(--transition-speed) var(--transition-func),
+                         border-color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .result-salary-box {
+             background: linear-gradient(135deg, var(--dm-container-bg) 0%, #222222 100%); /* Dark subtle gradient */
+             border-color: var(--dm-border);
+        }
+        #result h2 { color: var(--lm-text-primary); transition: color var(--transition-speed) var(--transition-func); font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; } /* Added styles */
+        html.dark #result h2 { color: var(--dm-text-primary); }
+        #result p { color: var(--lm-text-secondary); transition: color var(--transition-speed) var(--transition-func); }
+        html.dark #result p { color: var(--dm-text-secondary); }
+        #result_summary strong { color: var(--lm-text-primary); transition: color var(--transition-speed) var(--transition-func); }
+        html.dark #result_summary strong { color: var(--dm-text-primary); }
+        /* Style the salary numbers directly */
+        .result-salary-box p:first-of-type { /* Target the paragraph containing salary spans */
+             font-size: 2.25rem; /* text-4xl */
+             font-weight: 700; /* bold */
+             margin-bottom: 0.75rem; /* mb-3 */
+             color: var(--lm-accent-blue);
+             transition: color var(--transition-speed) var(--transition-func);
+        }
+         html.dark .result-salary-box p:first-of-type {
+             color: var(--dm-accent-blue);
+         }
+        /* Remove the specific class rule for text-blue-700 */
+        /* .result-salary-box p.text-blue-700 { ... } */
+
+
+        /* Breakdown & Chart Containers */
+        .breakdown-container, .chart-container {
+            background-color: var(--lm-input-bg); /* Use input bg for contrast */
+            border: 1px solid var(--lm-border);
+            padding: 1.5rem; border-radius: 0.5rem;
+            transition: background-color var(--transition-speed) var(--transition-func),
+                        border-color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .breakdown-container, html.dark .chart-container {
+            background-color: var(--dm-container-bg);
+            border-color: var(--dm-border);
+        }
+        .breakdown-container h3, .chart-container h3 {
+            color: var(--lm-text-primary);
+            font-size: 1.125rem; /* text-lg */
+            font-weight: 600; /* semibold */
+            margin-bottom: 1rem; /* mb-4 */
+            transition: color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .breakdown-container h3, html.dark .chart-container h3 { color: var(--dm-text-primary); }
+
+        /* Breakdown Items */
+        .breakdown-item {
+            border-left: 3px solid transparent; padding: 0.75rem 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .breakdown-item:hover {
+            transform: translateX(5px); background-color: var(--lm-container-bg);
+            border-left-color: var(--lm-accent-blue); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        html.dark .breakdown-item:hover {
+            background-color: var(--dm-bg); /* Darker on hover */
+            border-left-color: var(--dm-accent-blue); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .breakdown-item i { color: var(--lm-accent-blue); transition: color var(--transition-speed) var(--transition-func); }
+        html.dark .breakdown-item i { color: var(--dm-accent-blue); }
+        .breakdown-item span span { /* Target inner span for value */
+            color: var(--lm-text-primary); font-weight: 600; /* Semibold */
+            transition: color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .breakdown-item span span { color: var(--dm-text-primary); }
+        /* Impact text styling */
+        .breakdown-item > span:last-child { /* Target the last span holding the impact % */
+             font-size: 0.75rem; /* text-xs */
+             font-weight: 600; /* semibold */
+        }
+        .breakdown-item .text-green-600 { color: var(--lm-accent-green); transition: color var(--transition-speed) var(--transition-func); }
+        .breakdown-item .text-red-600 { color: var(--lm-accent-red); transition: color var(--transition-speed) var(--transition-func); }
+        html.dark .breakdown-item .text-green-600 { color: var(--dm-accent-green); }
+        html.dark .breakdown-item .text-red-600 { color: var(--dm-accent-red); }
+
+        /* Disclaimer Text */
+        p.text-red-600 { /* Target specific p tag */
+             color: var(--lm-accent-red);
+             font-size: 0.75rem; /* text-xs */
+             font-weight: 600; /* semibold */
+             margin-top: 1rem; /* mt-4 */
+             text-align: left; /* text-left */
+             transition: color var(--transition-speed) var(--transition-func);
+        }
+        html.dark p.text-red-600 { color: var(--dm-accent-red); }
+
+        /* Chart container */
+        .chart-container { height: 280px; position: relative; margin-top: 1rem; }
+        .chart-container p { /* Chart subtitle */
+            color: var(--lm-text-secondary);
+            font-size: 0.75rem; /* text-xs */
+            margin-top: 0.75rem; /* mt-3 */
+            text-align: center; /* text-center */
+            transition: color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .chart-container p { color: var(--dm-text-secondary); }
+
+        /* Error Handling */
+        .error-message {
+            color: var(--lm-accent-red); font-size: 0.75rem; margin-top: 0.25rem; display: none;
+            transition: color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .error-message { color: var(--dm-accent-red); }
+        .error-message.visible { display: block; }
+        input.error, select.error { border-color: var(--lm-accent-red) !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3) !important; }
+        html.dark input.error, html.dark select.error { border-color: var(--dm-accent-red) !important; box-shadow: 0 0 0 3px rgba(255, 0, 153, 0.4) !important; }
+
+        /* Score Section */
+        .score-section-container { /* Added a class to the div */
+            background-color: var(--lm-score-bg);
+            border: 1px solid var(--lm-score-border); /* Added border */
+            padding: 1.25rem; /* p-5 */
+            border-radius: 0.5rem; /* rounded-lg */
+            margin-top: 1.5rem; /* mt-6 */
+            transition: background-color var(--transition-speed) var(--transition-func),
+                        border-color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .score-section-container {
+             background-color: var(--dm-score-bg);
+             border-color: var(--dm-score-border);
+        }
+        .score-section-container .text-sky-600 { color: var(--lm-score-icon); transition: color var(--transition-speed) var(--transition-func); } /* Icon */
+        html.dark .score-section-container .text-sky-600 { color: var(--dm-score-icon); }
+        .score-section-container .text-sky-800 { color: var(--lm-score-heading); transition: color var(--transition-speed) var(--transition-func); } /* Heading */
+        html.dark .score-section-container .text-sky-800 { color: var(--dm-score-heading); }
+        /* Score input labels */
+        .score-section-container label { font-size: 0.75rem; font-weight: 500; margin-bottom: 0.25rem; }
+        /* Score inputs */
+        .score-section-container input[type="number"] { font-size: 0.875rem; padding: 0.5rem 0.75rem; }
+
+
+        /* Radio buttons */
+        .score-format-radio {
+             border-color: var(--lm-border);
+             color: var(--lm-accent-blue); /* Check color */
+             transition: border-color var(--transition-speed) var(--transition-func), background-color var(--transition-speed) var(--transition-func);
+             height: 1rem; /* h-4 */
+             width: 1rem; /* w-4 */
+        }
+        .score-format-radio:checked { background-color: var(--lm-accent-blue); border-color: var(--lm-accent-blue); }
+        .score-format-radio:focus { ring: 2px; ring-offset: 2px; ring-color: var(--lm-accent-blue); } /* Tailwind focus rings */
+        html.dark .score-format-radio {
+             border-color: var(--dm-border);
+             color: var(--dm-accent-blue);
+        }
+        html.dark .score-format-radio:checked { background-color: var(--dm-accent-blue); border-color: var(--dm-accent-blue); }
+        html.dark .score-format-radio:focus { ring-color: var(--dm-accent-blue); }
+        .score-format-radio + label { /* Label next to radio */
+            color: var(--lm-text-primary);
+            font-size: 0.75rem; /* text-xs */
+            margin-left: 0.25rem; /* ml-1 */
+            transition: color var(--transition-speed) var(--transition-func);
+        }
+        html.dark .score-format-radio + label { color: var(--dm-text-primary); }
+
+        /* Footer */
+        footer {
+            color: var(--lm-text-secondary);
+            font-size: 0.875rem; /* text-sm */
+            text-align: center; /* text-center */
+            margin-top: 3rem; /* mt-12 */
+            padding-bottom: 1.5rem; /* pb-6 */
+            transition: color var(--transition-speed) var(--transition-func);
+        }
+        html.dark footer { color: var(--dm-text-secondary); }
+
+        /* ----- START: Modified Dark Mode Switch (Embedded Icons Approach) ----- */
+        .ios-switch-container {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .ios-switch-checkbox {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .ios-switch-label {
+            display: block;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--lm-border);
+            border-radius: 30px;
+            position: relative;
+            height: 100%;
+            transition: background-color var(--transition-speed) var(--transition-func),
+                        border-color var(--transition-speed) var(--transition-func);
+            background-color: var(--lm-border);
+        }
+        html.dark .ios-switch-label {
+            border-color: var(--dm-border);
+            background-color: var(--dm-accent-gray);
+        }
+
+        .ios-switch-inner { /* This is often used for ON/OFF text, keep if needed */
+            display: block;
+            width: 200%;
+            margin-left: -100%;
+            transition: margin var(--transition-speed) var(--transition-func);
+        }
+        .ios-switch-inner:before, .ios-switch-inner:after { /* Keep if using ON/OFF text */
+             display: block; float: left; width: 50%; height: 26px; padding: 0;
+             line-height: 26px; font-size: 12px; color: white; font-weight: bold;
+             box-sizing: border-box;
+        }
+
+
+        .ios-switch-switch {
+            display: flex; /* Use flexbox to center icon */
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            margin: 2px;
+            background: #FFFFFF;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 2px; /* Start position */
+            border: 1px solid var(--lm-border);
+            border-radius: 50%;
+            transition: all var(--transition-speed) var(--transition-func);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        html.dark .ios-switch-switch {
+           border-color: var(--dm-border);
+           background: var(--dm-text-secondary);
+        }
+
+        /* Icon Styling using direct elements */
+        .toggle-icon {
+            font-size: 14px; /* Adjust size */
+            line-height: 1; /* Ensure alignment */
+            transition: color var(--transition-speed) var(--transition-func);
+        }
+        .light-icon {
+            color: var(--lm-icon-sun);
+            display: inline-block; /* Show sun by default */
+        }
+        html.dark .light-icon {
+             color: var(--dm-icon-sun);
+        }
+
+        .dark-icon {
+            color: var(--lm-icon-moon);
+            display: none; /* Hide moon by default */
+        }
+         html.dark .dark-icon {
+             color: var(--dm-icon-moon);
+        }
+
+        /* Checked State Styles */
+        .ios-switch-checkbox:checked + .ios-switch-label {
+            background-color: var(--lm-accent-blue);
+            border-color: var(--lm-accent-blue);
+        }
+        html.dark .ios-switch-checkbox:checked + .ios-switch-label {
+            background-color: var(--dm-accent-blue);
+            border-color: var(--dm-accent-blue);
+        }
+
+        .ios-switch-checkbox:checked + .ios-switch-label .ios-switch-inner {
+             margin-left: 0;
+        }
+
+        /* Move switch handle when checked */
+        .ios-switch-checkbox:checked + .ios-switch-label .ios-switch-switch {
+             left: 24px;
+        }
+
+        /* Update handle background in dark mode when checked */
+        html.dark .ios-switch-checkbox:checked + .ios-switch-label .ios-switch-switch {
+             background: #FFFFFF;
+        }
+
+        /* Toggle icon visibility when checked */
+        .ios-switch-checkbox:checked + .ios-switch-label .light-icon {
+            display: none; /* Hide sun */
+        }
+        .ios-switch-checkbox:checked + .ios-switch-label .dark-icon {
+            display: inline-block; /* Show moon */
+        }
+
+        /* ----- END: Modified Dark Mode Switch (Embedded Icons Approach) ----- */
+
+
+        /* Animations (Keep as is, added shake) */
+        @keyframes fadeInResult { from { opacity: 0; transform: translateY(15px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .result-fade-in { animation: fadeInResult 0.6s ease-out forwards; }
+        @keyframes scaleUpPop { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+        .pop-text { animation: scaleUpPop 0.4s ease-in-out forwards; display: inline-block; }
+        @keyframes resultGlow { 0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0); } 50% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); } 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0); } }
+        html.dark @keyframes resultGlow { 0% { box-shadow: 0 0 5px rgba(30, 144, 255, 0); } 50% { box-shadow: 0 0 25px rgba(30, 144, 255, 0.5); } 100% { box-shadow: 0 0 5px rgba(30, 144, 255, 0); } }
+        .glow-effect { animation: resultGlow 0.8s ease-out forwards; }
+        @keyframes floating { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        .floating { animation: floating 3s ease-in-out infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); } 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } }
+        html.dark @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 133, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(0, 255, 133, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 133, 0); } }
+        .pulse-button { animation: pulse 2s infinite; }
+        /* Shake animation for validation */
+        @keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+
+
+        /* Tab display */
+        .tab { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+        .tab.active { display: block; opacity: 1; }
+
+    </style>
+</head>
+<body class="min-h-screen py-12 px-4">
+<div class="ios-switch-container">
+    <input type="checkbox" id="darkModeToggleCheckbox" class="ios-switch-checkbox">
+    <label for="darkModeToggleCheckbox" class="ios-switch-label" aria-label="Toggle Dark Mode">
+        <span class="ios-switch-inner"></span>
+        <span class="ios-switch-switch">
+            <i class="fas fa-sun fa-fw toggle-icon light-icon"></i>
+            <i class="fas fa-moon fa-fw toggle-icon dark-icon"></i>
+        </span>
+    </label>
+</div>
+
+ <div class="header-gradient py-6 mb-10 shadow-lg rounded-lg">
+        <div class="calculator-container px-6 bg-transparent border-none">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="text-white mb-6 md:mb-0 text-center md:text-left">
+                    <h1 class="text-3xl md:text-4xl font-bold">Indian Salary Calculator</h1>
+                    <p class="mt-1 md:mt-2 text-md md:text-lg">Estimate your market value</p>
+                </div>
+                <div class="flex items-center space-x-4 md:space-x-5">
+                    <div class="bg-white bg-opacity-25 p-3 md:p-4 rounded-xl floating shadow-md hidden md:block"><i class="fas fa-briefcase fa-lg md:fa-2x text-white"></i></div>
+                    <div class="bg-white bg-opacity-25 p-3 md:p-4 rounded-xl floating shadow-md hidden md:block" style="animation-delay: 0.5s"><i class="fas fa-rupee-sign fa-lg md:fa-2x text-white"></i></div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="calculator-container rounded-xl shadow-xl p-6 md:p-8 mx-auto mb-12"> <div class="progress-bar-container">
+            <div id="progressBar" class="progress-bar" style="width: 50%;"></div>
+        </div>
+
+        <form id="calculatorForm" class="space-y-8" novalidate>
+            <div class="flex justify-center md:justify-start border-b mb-8"> <button type="button" class="tab-button active mr-4" data-tab-id="basic">
+                    <div class="flex items-center"><i class="fas fa-user-tie fa-fw mr-2"></i> Professional Info</div>
+                </button>
+                <button type="button" class="tab-button" data-tab-id="education">
+                    <div class="flex items-center"><i class="fas fa-graduation-cap fa-fw mr-2"></i> Education & Scores</div>
+                </button>
+            </div>
+
+            <div id="basic" class="tab active">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold mb-2" for="domain">Industry / Domain</label>
+                        <select id="domain" class="w-full"> <option value="it_services">IT Services</option>
+                             <option value="product_companies">Product Companies (Tech)</option>
+                             <option value="finance">Finance & Banking</option>
+                             <option value="consulting">Consulting</option>
+                             <option value="healthcare">Healthcare</option>
+                             <option value="manufacturing">Manufacturing</option>
+                             <option value="ecommerce">E-commerce</option>
+                             <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2" for="role">Job Role</label>
+                        <select id="role" class="w-full"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div>
+                        <label class="block text-sm font-bold mb-2" for="experience">Years of Experience</label>
+                        <input type="number" id="experience" min="0" max="50" step="0.5" value="2" placeholder="e.g., 5.5" class="w-full">
+                        <p id="experience_error" class="error-message">Please enter a valid number of years (0-50).</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2" for="location">Location (City)</label>
+                        <select id="location" class="w-full">
+                            <optgroup label="Tier 1 Cities">
+                                <option value="tier1_bangalore">Bangalore</option>
+                                <option value="tier1_mumbai">Mumbai</option>
+                                <option value="tier1_delhi_ncr">Delhi NCR</option>
+                                <option value="tier1_gurgaon">Gurgaon</option>
+                                <option value="tier1_hyderabad">Hyderabad</option>
+                                <option value="tier1_pune">Pune</option>
+                            </optgroup>
+                            <optgroup label="Tier 2 Cities">
+                                <option value="tier2_chennai" selected>Chennai</option>
+                                <option value="tier2_kolkata">Kolkata</option>
+                                <option value="tier2_ahmedabad">Ahmedabad</option>
+                                <option value="tier2_jaipur">Jaipur</option>
+                                <option value="tier2_kochi">Kochi</option>
+                                <option value="tier2_chandigarh">Chandigarh</option>
+                            </optgroup>
+                            <optgroup label="Tier 3 Cities">
+                                <option value="tier3_coimbatore">Coimbatore</option>
+                                <option value="tier3_lucknow">Lucknow</option>
+                                <option value="tier3_indore">Indore</option>
+                                <option value="tier3_bhopal">Bhopal</option>
+                                <option value="tier3_nagpur">Nagpur</option>
+                                <option value="tier3_visakhapatnam">Visakhapatnam</option>
+                                <option value="tier3_other">Other Tier 3</option>
+                            </optgroup>
+                            <optgroup label="Other">
+                                <option value="tier4">Tier 4 City / Town</option>
+                                <option value="remote">Remote</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end pt-8">
+                    <button type="button" class="next-tab btn-primary flex items-center shadow hover:shadow-lg">Next <i class="fas fa-arrow-right ml-2"></i></button> </div>
+            </div>
+
+            <div id="education" class="tab">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold mb-2" for="education_level">Highest Education Level</label>
+                        <select id="education_level" class="w-full">
+                            <option value="high_school">High School / 12th</option>
+                            <option value="diploma">Diploma</option>
+                            <option value="bachelors" selected>Bachelor's Degree</option>
+                            <option value="masters">Master's Degree</option>
+                            <option value="phd">PhD / Doctorate</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-bold mb-2" for="bachelors_college_tier">Bachelor's College Tier</label>
+                        <select id="bachelors_college_tier" class="w-full">
+                            <option value="tier1">Tier 1 (Premier Inst.)</option>
+                            <option value="tier2" selected>Tier 2 (Reputed)</option>
+                            <option value="tier3">Tier 3 (Recognized)</option>
+                            <option value="tier4">Tier 4 (Other)</option>
+                        </select>
+                    </div>
+                    <div id="masters_college_tier_wrapper" class="hidden md:col-span-2">
+                        <label class="block text-sm font-bold mb-2" for="masters_college_tier">Master's/PhD College Tier</label>
+                        <select id="masters_college_tier" class="w-full">
+                            <option value="na" selected>Not Applicable / Same as Bachelors</option>
+                            <option value="tier1">Tier 1 (Premier Inst.)</option>
+                            <option value="tier2">Tier 2 (Reputed)</option>
+                            <option value="tier3">Tier 3 (Recognized)</option>
+                            <option value="tier4">Tier 4 (Other)</option>
+                        </select>
+                    </div>
+                 </div>
+                <div class="score-section-container"> <div class="flex items-center mb-4"><i class="fas fa-book-open text-sky-600 mr-2"></i><h3 class="font-semibold text-sky-800">Academic Scores (Compulsory)</h3></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                        <div>
+                            <label class="block" for="tenth_score">10th Score</label> <div class="flex space-x-3 mb-2">
+                                <div class="flex items-center"><input type="radio" id="tenth_percentage" name="tenth_format" value="percentage" checked class="score-format-radio" data-target="tenth_score" data-max="100"><label for="tenth_percentage"> % </label></div>
+                                <div class="flex items-center"><input type="radio" id="tenth_cgpa" name="tenth_format" value="cgpa" class="score-format-radio" data-target="tenth_score" data-max="10"><label for="tenth_cgpa"> CGPA </label></div>
+                            </div>
+                            <input type="number" id="tenth_score" min="0" max="100" step="0.1" placeholder="e.g., 85 (%)" class="w-full">
+                            <p id="tenth_score_error" class="error-message">Required.</p>
+                        </div>
+                        <div>
+                            <label class="block" for="twelfth_score">12th Score</label>
+                            <div class="flex space-x-3 mb-2">
+                                <div class="flex items-center"><input type="radio" id="twelfth_percentage" name="twelfth_format" value="percentage" checked class="score-format-radio" data-target="twelfth_score" data-max="100"><label for="twelfth_percentage"> % </label></div>
+                                <div class="flex items-center"><input type="radio" id="twelfth_cgpa" name="twelfth_format" value="cgpa" class="score-format-radio" data-target="twelfth_score" data-max="10"><label for="twelfth_cgpa"> CGPA </label></div>
+                            </div>
+                            <input type="number" id="twelfth_score" min="0" max="100" step="0.1" placeholder="e.g., 92 (%)" class="w-full">
+                            <p id="twelfth_score_error" class="error-message">Required.</p>
+                        </div>
+                        <div>
+                            <label class="block" for="degree_score">Bachelor's Degree Score</label>
+                            <div class="flex space-x-3 mb-2">
+                                <div class="flex items-center"><input type="radio" id="degree_percentage" name="degree_format" value="percentage" checked class="score-format-radio" data-target="degree_score" data-max="100"><label for="degree_percentage"> % </label></div>
+                                <div class="flex items-center"><input type="radio" id="degree_cgpa" name="degree_format" value="cgpa" class="score-format-radio" data-target="degree_score" data-max="10"><label for="degree_cgpa"> CGPA </label></div>
+                                <div class="flex items-center"><input type="radio" id="degree_gpa" name="degree_format" value="gpa" class="score-format-radio" data-target="degree_score" data-max="4"><label for="degree_gpa"> GPA </label></div>
+                            </div>
+                            <input type="number" id="degree_score" min="0" max="100" step="0.01" placeholder="e.g., 78 (%)" class="w-full">
+                            <p id="degree_score_error" class="error-message">Required.</p>
+                        </div>
+                        <div>
+                            <label class="block" for="masters_score">Master's Score <span id="masters_score_optional_label">(Required if Masters/PhD)</span></label>
+                            <div class="flex space-x-3 mb-2">
+                                <div class="flex items-center"><input type="radio" id="masters_percentage" name="masters_format" value="percentage" checked class="score-format-radio" data-target="masters_score" data-max="100"><label for="masters_percentage"> % </label></div>
+                                <div class="flex items-center"><input type="radio" id="masters_cgpa" name="masters_format" value="cgpa" class="score-format-radio" data-target="masters_score" data-max="10"><label for="masters_cgpa"> CGPA </label></div>
+                                <div class="flex items-center"><input type="radio" id="masters_gpa" name="masters_format" value="gpa" class="score-format-radio" data-target="masters_score" data-max="4"><label for="masters_gpa"> GPA </label></div>
+                            </div>
+                            <input type="number" id="masters_score" min="0" max="100" step="0.01" placeholder="Enter if applicable" class="w-full">
+                            <p id="masters_score_error" class="error-message">Required if Masters/PhD selected.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between pt-8">
+                    <button type="button" class="prev-tab btn-secondary flex items-center shadow hover:shadow-lg"><i class="fas fa-arrow-left mr-2"></i> Previous</button>
+                    <button type="submit" id="calculateBtn" class="btn-success flex items-center pulse-button shadow hover:shadow-lg"><i class="fas fa-calculator mr-2"></i> Calculate Salary</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="result" class="mt-10"> <div class="result-salary-box glow-effect">
+                <h2>Estimated Salary Range (Annual CTC)</h2>
+                <p class="pop-text"><span id="salary_min"></span> - <span id="salary_max"></span> LPA</p>
+                <p id="result_summary" class="text-sm"> </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                <div class="breakdown-container">
+                    <h3>Key Influencing Factors</h3>
+                    <ul id="salaryBreakdown" class="space-y-1 text-sm text-left"></ul>
+                    <p class="text-red-600">*Disclaimer: This is a simplified estimate based on general trends, not real-time market data. Actual offers depend heavily on the specific company, individual negotiation, exact skillset, and current market conditions.</p>
+                </div>
+                <div class="chart-container">
+                    <h3>Salary Comparison</h3>
+                    <canvas id="salaryComparisonChart"></canvas>
+                    <p>Comparison with typical market salaries.</p> </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button type="button" id="resetBtn" class="btn-reset shadow hover:shadow-md"><i class="fas fa-redo mr-1"></i> Start Over</button> </div>
+        </div>
+    </div>
+
+    <footer>Salary data is estimated for informational purposes only.</footer> <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.5.0/countUp.min.js"></script>
+
+    <script>
+      // Execute script after the window loads
+      window.onload = () => {
+        console.log("Window loaded. Initializing enhanced calculator script + custom themes...");
+
+        // --- DOM Element References ---
+        const form = document.getElementById('calculatorForm');
+        const progressBar = document.getElementById('progressBar');
+        const tabs = document.querySelectorAll('.tab');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const nextButton = document.querySelector('.next-tab');
+        const prevButton = document.querySelector('.prev-tab');
+        const domainSelect = document.getElementById('domain');
+        const roleSelect = document.getElementById('role');
+        const experienceInput = document.getElementById('experience');
+        const locationSelect = document.getElementById('location');
+        const educationLevelSelect = document.getElementById('education_level');
+        const bachelorsCollegeTierSelect = document.getElementById('bachelors_college_tier');
+        const mastersCollegeTierSelect = document.getElementById('masters_college_tier');
+        const mastersCollegeTierWrapper = document.getElementById('masters_college_tier_wrapper');
+        const resultDiv = document.getElementById('result');
+        const salaryMinSpan = document.getElementById('salary_min');
+        const salaryMaxSpan = document.getElementById('salary_max');
+        const resultSummaryP = document.getElementById('result_summary');
+        const salaryBreakdownUl = document.getElementById('salaryBreakdown');
+        const scoreFormatRadios = document.querySelectorAll('.score-format-radio');
+        const resetButton = document.getElementById('resetBtn');
+        const salaryChartCanvas = document.getElementById('salaryComparisonChart');
+        const mastersScoreInput = document.getElementById('masters_score');
+        const mastersScoreOptionalLabel = document.getElementById('masters_score_optional_label');
+        const darkModeToggleCheckbox = document.getElementById('darkModeToggleCheckbox'); // Updated ID
+        const htmlElement = document.documentElement;
+
+        // --- Verify Essential Elements ---
+        const essentialElements = {
+            form, progressBar, domainSelect, roleSelect, experienceInput, locationSelect, educationLevelSelect,
+            bachelorsCollegeTierSelect, mastersCollegeTierSelect, mastersCollegeTierWrapper,
+            resultDiv, salaryMinSpan, salaryMaxSpan, resultSummaryP, salaryBreakdownUl, resetButton, salaryChartCanvas,
+            nextButton, prevButton, mastersScoreInput, mastersScoreOptionalLabel, darkModeToggleCheckbox // Updated Check
+        };
+        for (const key in essentialElements) {
+            if (!essentialElements[key]) {
+                console.error(`CRITICAL ERROR: Element "${key}" not found.`);
+                alert(`Page failed to initialize. Element "${key}" missing.`);
+                return;
+            }
+        }
+        // Check for correct number of tabs and buttons (assuming 2 tabs)
+        if (tabs.length !== 2 || tabButtons.length !== 2) {
+            console.error(`CRITICAL ERROR: Found ${tabs.length} tabs and ${tabButtons.length} tab buttons. Expected 2 each.`);
+            alert("Page failed to initialize. Incorrect tab structure.");
+            return;
+        }
+        console.log("Essential elements verified.");
+
+
+        // --- Data ---
+        const rolesByDomain = {
+             it_services: ['Software Engineer', 'QA Engineer', 'Business Analyst', 'Project Manager', 'System Administrator', 'DevOps Engineer', 'Cloud Engineer', 'Database Administrator'],
+             product_companies: ['Software Development Engineer (SDE)', 'Product Manager', 'Data Scientist', 'UX/UI Designer', 'Site Reliability Engineer (SRE)', 'Backend Engineer', 'Frontend Engineer', 'Machine Learning Engineer'],
+             finance: ['Financial Analyst', 'Investment Banker', 'Accountant', 'Risk Manager', 'Data Analyst (Finance)', 'Quant Analyst', 'Compliance Officer', 'Auditor'],
+             consulting: ['Management Consultant', 'Technology Consultant', 'Strategy Consultant', 'Associate Consultant', 'Senior Consultant', 'Business Analyst (Consulting)'],
+             healthcare: ['Doctor', 'Nurse', 'Pharmacist', 'Healthcare Administrator', 'Medical Representative', 'Lab Technician', 'Biomedical Engineer', 'Medical Coder'],
+             manufacturing: ['Mechanical Engineer', 'Production Manager', 'Supply Chain Manager', 'Quality Control Inspector', 'Industrial Engineer', 'Electrical Engineer', 'Process Engineer'],
+             ecommerce: ['Digital Marketing Manager', 'SEO Specialist', 'Category Manager', 'Logistics Coordinator', 'Customer Support Lead', 'Data Analyst (Ecom)', 'PPC Specialist'],
+             other: ['HR Manager', 'Marketing Specialist', 'Sales Executive', 'Content Writer', 'Graphic Designer', 'Operations Manager', 'Legal Counsel']
+        };
+
+        // --- State ---
+        let currentTab = 0;
+        let salaryChartInstance = null;
+
+        // --- Helper Functions ---
+        const showError = (inputElement, errorElement, message) => {
+            if (inputElement) inputElement.classList.add('error');
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add('visible');
+            }
+        };
+
+        const clearError = (inputElement, errorElement) => {
+            if (inputElement) inputElement.classList.remove('error');
+            if (errorElement) errorElement.classList.remove('visible');
+        };
+
+        // --- Core Functions ---
+        function updateRoles() {
+            const selectedDomain = domainSelect.value;
+            const roles = rolesByDomain[selectedDomain] || rolesByDomain['other'];
+            roleSelect.innerHTML = '';
+            roles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+                option.textContent = role;
+                roleSelect.appendChild(option);
+            });
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentTab + 1) / tabs.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function switchTab(targetIndex) {
+            if (targetIndex < 0 || targetIndex >= tabs.length || targetIndex === currentTab) return;
+
+            tabs[currentTab].classList.remove('active');
+            tabButtons[currentTab].classList.remove('active');
+            tabs[targetIndex].classList.add('active');
+            tabButtons[targetIndex].classList.add('active');
+            currentTab = targetIndex;
+            updateProgressBar();
+
+            // Scroll into view only if necessary
+            if (tabs[targetIndex].getBoundingClientRect().top > window.innerHeight * 0.3) {
+                tabs[targetIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            console.log(`Switched to tab index: ${currentTab}`);
+        }
+
+         function handleScoreFormatChange(event) {
+            const radio = event.target;
+            if (radio.checked && radio.dataset.target && radio.dataset.max) {
+                const targetInputId = radio.dataset.target;
+                const maxVal = radio.dataset.max;
+                const targetInput = document.getElementById(targetInputId);
+                const errorElement = document.getElementById(`${targetInputId}_error`);
+
+                if(targetInput && errorElement) {
+                    targetInput.max = maxVal;
+                    clearError(targetInput, errorElement);
+                    validateScoreInput(targetInputId); // Re-validate
+
+                    // Update placeholder with format hint
+                    let placeholderText = "Enter Score";
+                    if (radio.value === 'percentage') placeholderText = `e.g., 85 (%)`;
+                    else if (radio.value === 'cgpa') placeholderText = `e.g., 9.2 (CGPA)`;
+                    else if (radio.value === 'gpa') placeholderText = `e.g., 3.5 (GPA)`;
+                    targetInput.placeholder = placeholderText;
+
+                } else {
+                    console.error(`Could not find input or error element for target ID: ${targetInputId}`);
+                }
+            }
+        }
+
+        function toggleMastersFields() {
+            const selectedEduLevel = educationLevelSelect.value;
+            const isMastersOrPhd = selectedEduLevel === 'masters' || selectedEduLevel === 'phd';
+
+            if (isMastersOrPhd) {
+                mastersCollegeTierWrapper.classList.remove('hidden');
+                mastersCollegeTierWrapper.classList.add('md:col-span-2');
+                mastersScoreOptionalLabel.textContent = "(Required)";
+                mastersScoreInput.placeholder = "e.g., 8.5 (CGPA)";
+            } else {
+                mastersCollegeTierWrapper.classList.add('hidden');
+                mastersCollegeTierWrapper.classList.remove('md:col-span-2');
+                mastersCollegeTierSelect.value = 'na';
+                mastersScoreOptionalLabel.textContent = "(Optional)";
+                mastersScoreInput.placeholder = "Enter if applicable";
+                clearError(mastersScoreInput, document.getElementById('masters_score_error'));
+            }
+             // Re-apply placeholder format for masters score if needed
+             const currentMastersFormat = document.querySelector('input[name="masters_format"]:checked');
+             if (currentMastersFormat) {
+                 handleScoreFormatChange({ target: currentMastersFormat });
+             }
+        }
+
+
+        // --- Validation Functions ---
+         function validateNumberInput(inputElement, errorElement, min, max, fieldName, isOptional = false) {
+            clearError(inputElement, errorElement);
+            const valueStr = inputElement.value.trim();
+
+            if (isOptional && valueStr === '') return true;
+            if (!isOptional && valueStr === '') {
+                 showError(inputElement, errorElement, `${fieldName} is required.`);
+                 return false;
+            }
+
+            const value = parseFloat(valueStr);
+            if (isNaN(value) || value < min || value > max) {
+                const formatRadio = inputElement.closest('div').querySelector('.score-format-radio:checked');
+                const formatHint = formatRadio ? ` (${formatRadio.value.toUpperCase()})` : '';
+                showError(inputElement, errorElement, `Please enter a valid ${fieldName}${formatHint} (${min}-${max}).`);
+                return false;
+            }
+            return true;
+        }
+
+        function validateScoreInput(inputId) {
+            const inputElement = document.getElementById(inputId);
+            const errorElement = document.getElementById(`${inputId}_error`);
+            const formatRadio = document.querySelector(`input[name="${inputId.replace('_score', '_format')}"]:checked`);
+
+            if (!inputElement || !errorElement) {
+                console.error(`Validation Error: Cannot find elements for score input ID "${inputId}"`);
+                return false;
+            }
+
+            let isOptional = true;
+            if (inputId === 'tenth_score' || inputId === 'twelfth_score' || inputId === 'degree_score') {
+                isOptional = false;
+            } else if (inputId === 'masters_score') {
+                const selectedEduLevel = educationLevelSelect.value;
+                isOptional = !(selectedEduLevel === 'masters' || selectedEduLevel === 'phd');
+            }
+
+            const maxVal = formatRadio ? parseFloat(formatRadio.dataset.max) : 100;
+            // Try to get label text more reliably
+            const labelElement = document.querySelector(`label[for="${inputId}"]`) || inputElement.closest('div').querySelector('label');
+            const fieldName = labelElement?.textContent.replace('(Required if Masters/PhD)','').trim() || 'Score';
+
+            return validateNumberInput(inputElement, errorElement, 0, maxVal, fieldName, isOptional);
+        }
+
+        function validateTab(tabIndex) {
+            let isValid = true;
+            console.log(`Validating Tab ${tabIndex}`);
+            const tabElement = tabs[tabIndex];
+
+            if (tabIndex === 0) { // Basic Info Tab
+                isValid = validateNumberInput(experienceInput, document.getElementById('experience_error'), 0, 50, 'Years of Experience', false) && isValid;
+                // Validate selects visually (add/remove error class)
+                isValid = (domainSelect.value ? (clearError(domainSelect, null), true) : (showError(domainSelect, null, ''), false)) && isValid;
+                isValid = (roleSelect.value ? (clearError(roleSelect, null), true) : (showError(roleSelect, null, ''), false)) && isValid;
+                isValid = (locationSelect.value ? (clearError(locationSelect, null), true) : (showError(locationSelect, null, ''), false)) && isValid;
+
+            } else if (tabIndex === 1) { // Education Tab
+                 isValid = (educationLevelSelect.value ? (clearError(educationLevelSelect, null), true) : (showError(educationLevelSelect, null, ''), false)) && isValid;
+                 isValid = (bachelorsCollegeTierSelect.value ? (clearError(bachelorsCollegeTierSelect, null), true) : (showError(bachelorsCollegeTierSelect, null, ''), false)) && isValid;
+                 if (!mastersCollegeTierWrapper.classList.contains('hidden')) {
+                     isValid = (mastersCollegeTierSelect.value ? (clearError(mastersCollegeTierSelect, null), true) : (showError(mastersCollegeTierSelect, null, ''), false)) && isValid;
+                 } else {
+                     clearError(mastersCollegeTierSelect, null); // Clear error if hidden
+                 }
+
+                isValid = validateScoreInput('tenth_score') && isValid;
+                isValid = validateScoreInput('twelfth_score') && isValid;
+                isValid = validateScoreInput('degree_score') && isValid;
+                isValid = validateScoreInput('masters_score') && isValid;
+            }
+
+             // Add shake animation to invalid fields in the current tab
+             if (!isValid) {
+                 tabElement.querySelectorAll('.error').forEach(el => {
+                     el.classList.add('shake');
+                     setTimeout(() => el.classList.remove('shake'), 500);
+                 });
+             }
+
+            console.log(`Tab ${tabIndex} Validation Result: ${isValid}`);
+            return isValid;
+        }
+
+
+        // --- Calculation Function ---
+        function calculateSalary() {
+             console.log("Attempting salary calculation...");
+             let baseSalary = 4.5; // Base LPA for 0 experience, tier 3 city, etc.
+             const experienceValue = parseFloat(experienceInput.value);
+             if (isNaN(experienceValue) || experienceValue < 0 || experienceValue > 50) {
+                 // This should ideally be caught by validation, but double-check
+                 throw new Error("Invalid Experience value during calculation.");
+             }
+             const experience = experienceValue;
+
+             // Get selected options safely
+             const locationOption = locationSelect.options[locationSelect.selectedIndex];
+             const domainOption = domainSelect.options[domainSelect.selectedIndex];
+             const roleOption = roleSelect.options[roleSelect.selectedIndex];
+             const educationOption = educationLevelSelect.options[educationLevelSelect.selectedIndex];
+             const bachelorsCollegeOption = bachelorsCollegeTierSelect.options[bachelorsCollegeTierSelect.selectedIndex];
+             const mastersCollegeOption = mastersCollegeTierSelect.options[mastersCollegeTierSelect.selectedIndex];
+
+             // Check if any select option wasn't read properly (shouldn't happen if validation passes)
+             if (!locationOption || !domainOption || !roleOption || !educationOption || !bachelorsCollegeOption || !mastersCollegeOption) {
+                 throw new Error("Could not read required dropdown selection during calculation.");
+             }
+
+             const locationValue = locationOption.value;
+             const domain = domainOption.value;
+             const role = roleOption.value;
+             const education = educationOption.value;
+             const bachelorsCollegeTier = bachelorsCollegeOption.value;
+             const mastersCollegeTier = mastersCollegeOption.value;
+             const locationTier = locationValue.split('_')[0]; // e.g., 'tier1' from 'tier1_bangalore'
+             const locationName = locationOption.text;
+
+             let breakdown = []; // To store factors and their impact
+
+             // 1. Experience Multiplier
+             let expMultiplier = 1 + (experience * 0.16); // Base increase per year
+             if (experience > 5) expMultiplier *= 1.05; // Bonus for 5+ years
+             if (experience > 10) expMultiplier *= 1.1; // Bonus for 10+ years
+             if (experience > 20) expMultiplier *= 1.05; // Small bonus for 20+ years
+             baseSalary *= expMultiplier;
+             breakdown.push({ factor: 'Experience', value: `${experience} years`, icon: 'fa-briefcase', impact: `+${((expMultiplier - 1) * 100).toFixed(0)}%` });
+
+             // 2. Location Multiplier
+             let locMultiplier = 1.0;
+             if (locationTier === 'tier1') locMultiplier = 1.35;
+             else if (locationTier === 'tier2') locMultiplier = 1.10;
+             else if (locationTier === 'tier3') locMultiplier = 0.95;
+             else if (locationTier === 'tier4') locMultiplier = 0.85;
+             else if (locationTier === 'remote') locMultiplier = 1.05; // Remote slightly above Tier 3 base
+             baseSalary *= locMultiplier;
+             breakdown.push({ factor: 'Location', value: locationName, icon: 'fa-map-marker-alt', impact: `${locMultiplier >= 1 ? '+' : ''}${((locMultiplier - 1) * 100).toFixed(0)}%` });
+
+             // 3. Domain Multiplier
+             let domainMultiplier = 1.0;
+             if (['product_companies', 'finance', 'consulting'].includes(domain)) domainMultiplier = 1.25; // Higher paying domains
+             else if (['manufacturing', 'healthcare'].includes(domain)) domainMultiplier = 0.95; // Slightly lower base
+             baseSalary *= domainMultiplier;
+             breakdown.push({ factor: 'Industry', value: domainOption.text, icon: 'fa-industry', impact: `${domainMultiplier >= 1 ? '+' : ''}${((domainMultiplier - 1) * 100).toFixed(0)}%` });
+
+             // 4. Role Multiplier (Simplified based on keywords)
+             let roleMultiplier = 1.0;
+             const roleText = roleOption.text || 'N/A';
+             if (role.includes('manager') || role.includes('scientist') || role.includes('consultant') || role.includes('sde') || role.includes('sre') || role.includes('banker')) roleMultiplier = 1.20;
+             else if (role.includes('analyst') || role.includes('engineer') || role.includes('accountant')) roleMultiplier = 1.0; // Standard roles
+             else if (role.includes('support') || role.includes('technician') || role.includes('inspector') || role.includes('representative') || role.includes('coder')) roleMultiplier = 0.9; // Typically lower base
+             baseSalary *= roleMultiplier;
+             breakdown.push({ factor: 'Job Role', value: roleText, icon: 'fa-user-tie', impact: `${roleMultiplier >= 1 ? '+' : ''}${((roleMultiplier - 1) * 100).toFixed(0)}%` });
+
+             // 5. Education Level Multiplier
+             let eduMultiplier = 1.0;
+             if (education === 'masters') eduMultiplier = 1.20;
+             else if (education === 'phd') eduMultiplier = 1.35;
+             else if (education === 'diploma') eduMultiplier = 0.90;
+             else if (education === 'high_school') eduMultiplier = 0.80;
+             baseSalary *= eduMultiplier;
+             breakdown.push({ factor: 'Education', value: educationOption.text, icon: 'fa-graduation-cap', impact: `${eduMultiplier >= 1 ? '+' : ''}${((eduMultiplier - 1) * 100).toFixed(0)}%` });
+
+             // 6. Bachelor's College Tier Multiplier
+             let bachelorsCollegeMultiplier = 1.0;
+             if (bachelorsCollegeTier === 'tier1') bachelorsCollegeMultiplier = 1.30;
+             else if (bachelorsCollegeTier === 'tier2') bachelorsCollegeMultiplier = 1.05;
+             else if (bachelorsCollegeTier === 'tier4') bachelorsCollegeMultiplier = 0.90;
+             baseSalary *= bachelorsCollegeMultiplier;
+             breakdown.push({ factor: "Bachelor's College", value: bachelorsCollegeOption.text, icon: 'fa-university', impact: `${bachelorsCollegeMultiplier >= 1 ? '+' : ''}${((bachelorsCollegeMultiplier - 1) * 100).toFixed(0)}%` });
+
+             // 7. Master's/PhD College Tier Multiplier (Only if applicable and Tier 1)
+             let mastersCollegeMultiplier = 1.0;
+             if ((education === 'masters' || education === 'phd') && mastersCollegeTier === 'tier1') {
+                 mastersCollegeMultiplier = 1.10; // Smaller boost than bachelors tier 1, but additional
+                 baseSalary *= mastersCollegeMultiplier;
+                 breakdown.push({ factor: "Master's/PhD College", value: "Tier 1", icon: 'fa-award', impact: `+${((mastersCollegeMultiplier - 1) * 100).toFixed(0)}%` });
+             }
+
+             // 8. Academic Score Multipliers (Small boosts for high scores)
+             const applyScoreMultiplier = (inputId, factorName, icon, threshold, boostFactor, cap) => {
+                 let multiplier = 1.0;
+                 const scoreInput = document.getElementById(inputId);
+                 const scoreValueStr = scoreInput.value.trim();
+                 if (scoreValueStr !== '') {
+                     const score = parseFloat(scoreValueStr);
+                     if (!isNaN(score)) {
+                         const formatRadio = document.querySelector(`input[name="${inputId.replace('_score', '_format')}"]:checked`);
+                         let normalizedScore = score; // Assume percentage initially
+                         if (formatRadio) {
+                             if (formatRadio.value === 'cgpa') normalizedScore = score * 10; // Convert CGPA out of 10 to %
+                             else if (formatRadio.value === 'gpa') normalizedScore = score * 25; // Convert GPA out of 4 to %
+                         }
+                         // Apply boost only if score is above threshold and normalized value is valid
+                         if (!isNaN(normalizedScore) && normalizedScore > threshold) {
+                             multiplier += (normalizedScore - threshold) * boostFactor; // Linear boost above threshold
+                         }
+                         multiplier = Math.min(multiplier, cap); // Cap the multiplier effect
+                         baseSalary *= multiplier;
+                         if (multiplier > 1.01) { // Only show impact if significant
+                             breakdown.push({ factor: factorName, value: 'High Performance', icon: icon, impact: `+${((multiplier - 1) * 100).toFixed(0)}%` });
+                         }
+                     } else { console.warn(`Warning: ${factorName} score input ignored as NaN.`); }
+                 }
+                 return multiplier; // Return for potential debugging
+             };
+
+             // Apply for each relevant score
+             applyScoreMultiplier('degree_score', 'Degree Score', 'fa-star', 75, 0.002, 1.10); // >75%, 0.2% boost per point, max 10%
+             applyScoreMultiplier('tenth_score', '10th Score', 'fa-award', 80, 0.001, 1.05);   // >80%, 0.1% boost per point, max 5%
+             applyScoreMultiplier('twelfth_score', '12th Score', 'fa-award', 80, 0.0015, 1.07); // >80%, 0.15% boost per point, max 7%
+             if (education === 'masters' || education === 'phd') {
+                 applyScoreMultiplier('masters_score', 'Masters Score', 'fa-medal', 80, 0.004, 1.12); // >80%, 0.4% boost per point, max 12% (Higher impact)
+             }
+
+             // --- Final Range Calculation ---
+             // Introduce some variability around the calculated base
+             const salaryMin = Math.max(0.5, baseSalary * 0.85); // Min is 85% of calculated base, floor at 0.5 LPA
+             const salaryMax = baseSalary * 1.15; // Max is 115% of calculated base
+
+             // Final sanity check for NaN results
+             if (isNaN(salaryMin) || isNaN(salaryMax) || isNaN(baseSalary)) {
+                 console.error("Calculation resulted in NaN values.", { baseSalary, salaryMin, salaryMax });
+                 throw new Error("Calculation resulted in invalid numbers. Please check inputs.");
+             }
+
+             const finalResult = {
+                 min: salaryMin.toFixed(1), // Keep one decimal place
+                 max: salaryMax.toFixed(1),
+                 breakdown: breakdown,
+                 base: baseSalary // Keep the unadjusted base for chart comparison
+             };
+
+             console.log("Calculation successful:", finalResult);
+             return finalResult;
+        }
+
+
+        // --- Display Functions ---
+        function displayResults(result) {
+            console.log("Attempting to display results:", result);
+            if (!result || typeof result !== 'object' || result.min === undefined || result.max === undefined) {
+                console.error("Display Error: Invalid result object received.");
+                // Optionally show an error message to the user here
+                resultDiv.innerHTML = '<p class="text-red-600 dark:text-red-500">Could not display results due to an internal error.</p>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+
+            // Reset animations before applying again
+            resultDiv.classList.remove('result-fade-in');
+            const glowElement = resultDiv.querySelector('.glow-effect');
+            const popElement = resultDiv.querySelector('.pop-text');
+            if (glowElement) glowElement.classList.remove('glow-effect');
+            if (popElement) popElement.classList.remove('pop-text');
+
+            const minVal = parseFloat(result.min);
+            const maxVal = parseFloat(result.max);
+            // CountUp animation for salary numbers
+            if (typeof CountUp !== 'undefined' && !isNaN(minVal) && !isNaN(maxVal)) {
+                 try {
+                    const countUpMin = new CountUp(salaryMinSpan, minVal, { duration: 1.5, decimalPlaces: 1, useEasing: true });
+                    const countUpMax = new CountUp(salaryMaxSpan, maxVal, { duration: 1.5, decimalPlaces: 1, useEasing: true });
+                    if (!countUpMin.error) countUpMin.start(); else salaryMinSpan.textContent = minVal.toFixed(1);
+                    if (!countUpMax.error) countUpMax.start(); else salaryMaxSpan.textContent = maxVal.toFixed(1);
+                } catch (e) {
+                    console.error("CountUp.js error:", e);
+                    salaryMinSpan.textContent = minVal.toFixed(1);
+                    salaryMaxSpan.textContent = maxVal.toFixed(1);
+                }
+            } else { // Fallback if CountUp fails or is not loaded
+                salaryMinSpan.textContent = isNaN(minVal) ? "Error" : minVal.toFixed(1);
+                salaryMaxSpan.textContent = isNaN(maxVal) ? "Error" : maxVal.toFixed(1);
+            }
+
+            // Result Summary Text
+            const roleText = roleSelect.options[roleSelect.selectedIndex]?.text || 'N/A';
+            const locationText = locationSelect.options[locationSelect.selectedIndex]?.text || 'N/A';
+            const expText = experienceInput.value;
+            const eduText = educationLevelSelect.options[educationLevelSelect.selectedIndex]?.text || 'N/A';
+            resultSummaryP.innerHTML = `Estimate for <strong>${roleText}</strong> in <strong>${locationText}</strong> with <strong>${expText}</strong> years exp. & <strong>${eduText}</strong>.`;
+
+            // Salary Breakdown List
+            salaryBreakdownUl.innerHTML = '';
+            if (result.breakdown && Array.isArray(result.breakdown)) {
+                result.breakdown.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'breakdown-item flex justify-between items-center';
+                    // Use CSS classes (defined in <style>) for impact color
+                    const impactClass = item.impact.startsWith('+') ? 'text-green-600' : 'text-red-600';
+                    li.innerHTML = `
+                        <span class="flex items-center">
+                            <i class="fas ${item.icon || 'fa-check-circle'} w-4 text-center mr-3"></i>${item.factor}: <span class="font-semibold ml-1">${item.value}</span>
+                        </span>
+                        <span class="text-xs font-semibold ${impactClass}">${item.impact}</span>`;
+                    salaryBreakdownUl.appendChild(li);
+                });
+            } else {
+                salaryBreakdownUl.innerHTML = '<li>Breakdown data unavailable.</li>';
+            }
+
+            // Display Comparison Chart
+            displayComparisonChart(minVal, maxVal, result.base);
+
+            // Show results section with animation
+            resultDiv.style.display = 'block';
+            setTimeout(() => {
+                resultDiv.classList.add('result-fade-in');
+                if (glowElement) glowElement.classList.add('glow-effect');
+                if (popElement) popElement.classList.add('pop-text');
+            }, 50); // Small delay ensures display:block is registered before animation starts
+
+            // Scroll to results
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            console.log("Results displayed successfully.");
+        }
+
+        // --- Chart Function ---
+        function displayComparisonChart(minSalary, maxSalary, baseSalary) {
+            if (typeof Chart === 'undefined') { console.error("Chart.js library not loaded."); return; }
+            const ctx = salaryChartCanvas.getContext('2d');
+            if (!ctx) { console.error("Could not get 2D context for chart canvas."); return; }
+            // Destroy previous chart instance if it exists
+            if (salaryChartInstance) { salaryChartInstance.destroy(); salaryChartInstance = null; }
+            // Validate inputs for the chart
+            if (isNaN(minSalary) || isNaN(maxSalary) || isNaN(baseSalary)) {
+                console.error("Invalid salary values provided for chart generation.");
+                // Optionally display an error message on the canvas
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.font = "14px Poppins";
+                ctx.fillStyle = "red";
+                ctx.textAlign = "center";
+                ctx.fillText("Error generating chart data.", ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+
+            // Define comparison points (simplified)
+            const lowMarket = baseSalary * 0.7;
+            const avgMarket = baseSalary * 1.0;
+            const highMarket = baseSalary * 1.4;
+            const pregradSalary = avgMarket * 1.30; // Assumed 30% boost for pregraduation studies
+            const yourAvg = (minSalary + maxSalary) / 2;
+
+            const chartLabels = ['Low Market', 'Average Market', 'High Market', 'With Pregrad*', 'Your Estimate'];
+            const chartData = [lowMarket, avgMarket, highMarket, pregradSalary, yourAvg].map(val => isNaN(val) ? 0 : val.toFixed(1));
+
+            // Get computed styles based on current theme (light/dark)
+            const computedStyle = getComputedStyle(htmlElement);
+            const isDarkMode = htmlElement.classList.contains('dark');
+
+            // Use CSS variables for theme-aware colors
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'; // Lighter grid lines
+            const labelColor = isDarkMode ? computedStyle.getPropertyValue('--dm-text-secondary').trim() : computedStyle.getPropertyValue('--lm-text-primary').trim();
+            const tooltipBgColor = isDarkMode ? computedStyle.getPropertyValue('--dm-container-bg').trim() : computedStyle.getPropertyValue('--lm-container-bg').trim();
+            const tooltipTitleColor = isDarkMode ? computedStyle.getPropertyValue('--dm-text-primary').trim() : computedStyle.getPropertyValue('--lm-text-primary').trim();
+            const tooltipBodyColor = isDarkMode ? computedStyle.getPropertyValue('--dm-text-secondary').trim() : computedStyle.getPropertyValue('--lm-text-secondary').trim();
+
+            // Define bar colors based on theme using CSS variables
+            const backgroundColors = [
+                isDarkMode ? 'rgba(255, 0, 153, 0.7)' : 'rgba(239, 68, 68, 0.6)',  // Red/Pink (Low Market)
+                isDarkMode ? 'rgba(30, 144, 255, 0.7)' : 'rgba(245, 158, 11, 0.6)', // Blue/Amber (Avg Market)
+                isDarkMode ? 'rgba(0, 255, 133, 0.7)' : 'rgba(34, 197, 94, 0.6)',  // Green/Green (High Market)
+                isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(139, 92, 246, 0.6)', // White/Violet (Pregrad)
+                isDarkMode ? 'rgba(30, 144, 255, 0.9)' : 'rgba(59, 130, 246, 0.8)'   // Estimate (Stronger Blue/Blue)
+            ];
+             const borderColors = backgroundColors.map(color => color.replace(/0\.[0-9]+\)/, '1)')); // Make opaque for border
+
+            try {
+                salaryChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Estimated Salary (LPA)',
+                            data: chartData,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1,
+                            borderRadius: 4, // Add rounded corners to bars
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Allow chart to fill container height
+                        indexAxis: 'y', // Make it a horizontal bar chart
+                        scales: {
+                             x: { // Now the value axis
+                                beginAtZero: true,
+                                title: { display: true, text: 'Salary (LPA)', color: labelColor },
+                                ticks: { color: labelColor },
+                                grid: { color: gridColor }
+                            },
+                            y: { // Now the category axis
+                                ticks: { color: labelColor },
+                                grid: { display: false } // Hide vertical grid lines
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }, // Hide legend as labels are clear
+                            tooltip: {
+                                backgroundColor: tooltipBgColor,
+                                titleColor: tooltipTitleColor,
+                                bodyColor: tooltipBodyColor,
+                                titleFont: { family: 'Poppins' },
+                                bodyFont: { family: 'Poppins' },
+                                padding: 10,
+                                cornerRadius: 4,
+                                callbacks: { // Custom tooltip label
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) label += ': ';
+                                        if (context.parsed.x !== null) { // Use 'x' for horizontal bar chart value
+                                            if (context.label === 'Your Estimate') {
+                                                // Show the range for 'Your Estimate' bar
+                                                label += `${minSalary.toFixed(1)} - ${maxSalary.toFixed(1)} LPA`;
+                                            } else {
+                                                label += `${context.parsed.x} LPA`;
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                 console.error("Chart.js initialization failed:", e);
+                 // Display error on canvas as fallback
+                 ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                 ctx.font = "14px Poppins";
+                 ctx.fillStyle = isDarkMode ? computedStyle.getPropertyValue('--dm-accent-red').trim() : computedStyle.getPropertyValue('--lm-accent-red').trim();
+                 ctx.textAlign = "center";
+                 ctx.fillText("Failed to display chart.", ctx.canvas.width / 2, ctx.canvas.height / 2);
+            }
+        }
+
+        // --- Reset Function ---
+        function resetCalculator() {
+            console.log("Resetting calculator...");
+            form.reset();
+            updateRoles(); // Reset roles based on default domain
+            toggleMastersFields(); // Resets related fields and visibility
+            switchTab(0); // Go back to the first tab
+            resultDiv.style.display = 'none';
+            resultDiv.classList.remove('result-fade-in'); // Remove animation class
+
+            // Clear all validation errors
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('visible'));
+            document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+
+            // Destroy the chart if it exists
+            if (salaryChartInstance) {
+                salaryChartInstance.destroy();
+                salaryChartInstance = null;
+            }
+
+            // Reset score placeholders based on default radio selection
+            handleScoreFormatChange({ target: document.getElementById('tenth_percentage') });
+            handleScoreFormatChange({ target: document.getElementById('twelfth_percentage') });
+            handleScoreFormatChange({ target: document.getElementById('degree_percentage') });
+            // Masters placeholder is handled by toggleMastersFields
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log("Calculator reset complete.");
+        }
+
+
+        // --- Dark Mode Functions ---
+        function applyTheme(theme) {
+            const isDark = theme === 'dark';
+            htmlElement.classList.toggle('dark', isDark);
+            darkModeToggleCheckbox.checked = isDark; // Set checkbox state
+            localStorage.setItem('salaryCalcTheme', theme);
+
+            // Update chart colors if chart exists
+            if (salaryChartInstance) {
+                // Re-fetch computed styles for the new theme
+                const computedStyle = getComputedStyle(htmlElement);
+                const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+                const labelColor = isDark ? computedStyle.getPropertyValue('--dm-text-secondary').trim() : computedStyle.getPropertyValue('--lm-text-primary').trim();
+                const tooltipBgColor = isDark ? computedStyle.getPropertyValue('--dm-container-bg').trim() : computedStyle.getPropertyValue('--lm-container-bg').trim();
+                const tooltipTitleColor = isDark ? computedStyle.getPropertyValue('--dm-text-primary').trim() : computedStyle.getPropertyValue('--lm-text-primary').trim();
+                const tooltipBodyColor = isDark ? computedStyle.getPropertyValue('--dm-text-secondary').trim() : computedStyle.getPropertyValue('--lm-text-secondary').trim();
+
+                // Define bar colors again based on the *new* theme
+                const backgroundColors = [
+                    isDark ? 'rgba(255, 0, 153, 0.7)' : 'rgba(239, 68, 68, 0.6)',
+                    isDark ? 'rgba(30, 144, 255, 0.7)' : 'rgba(245, 158, 11, 0.6)',
+                    isDark ? 'rgba(0, 255, 133, 0.7)' : 'rgba(34, 197, 94, 0.6)',
+                    isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(139, 92, 246, 0.6)',
+                    isDark ? 'rgba(30, 144, 255, 0.9)' : 'rgba(59, 130, 246, 0.8)'
+                ];
+                 const borderColors = backgroundColors.map(color => color.replace(/0\.[0-9]+\)/, '1)'));
+
+                // Update chart options (axes and tooltips)
+                salaryChartInstance.options.scales.x.ticks.color = labelColor;
+                salaryChartInstance.options.scales.x.title.color = labelColor;
+                salaryChartInstance.options.scales.x.grid.color = gridColor;
+                salaryChartInstance.options.scales.y.ticks.color = labelColor;
+                salaryChartInstance.options.plugins.tooltip.backgroundColor = tooltipBgColor;
+                salaryChartInstance.options.plugins.tooltip.titleColor = tooltipTitleColor;
+                salaryChartInstance.options.plugins.tooltip.bodyColor = tooltipBodyColor;
+
+                // Update dataset colors
+                salaryChartInstance.data.datasets[0].backgroundColor = backgroundColors;
+                salaryChartInstance.data.datasets[0].borderColor = borderColors;
+
+                salaryChartInstance.update(); // Redraw the chart with new colors
+            }
+            console.log(`Theme applied: ${theme}`);
+        }
+
+        // Function to load theme from localStorage or system preference
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('salaryCalcTheme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            // Use saved theme > system preference > default (light)
+            const initialTheme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
+            applyTheme(initialTheme);
+        }
+
+        // --- Event Listeners ---
+        tabButtons.forEach((button, index) => {
+            button.addEventListener('click', () => switchTab(index));
+        });
+
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                if (validateTab(currentTab)) { // Validate current tab before proceeding
+                    if (currentTab < tabs.length - 1) {
+                         switchTab(currentTab + 1); // Switch to next tab if valid
+                    }
+                } else {
+                    console.log("Next button blocked by validation failure on tab", currentTab);
+                    // Focus the first invalid field on the current tab
+                    const firstErrorInput = tabs[currentTab].querySelector('.error');
+                    if(firstErrorInput) firstErrorInput.focus({ preventScroll: true });
+                }
+            });
+        }
+
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                if (currentTab > 0) {
+                    switchTab(currentTab - 1); // Switch to previous tab
+                }
+            });
+        }
+
+        domainSelect.addEventListener('change', updateRoles);
+        educationLevelSelect.addEventListener('change', toggleMastersFields);
+        scoreFormatRadios.forEach(radio => {
+            radio.addEventListener('change', handleScoreFormatChange);
+        });
+        resetButton.addEventListener('click', resetCalculator);
+
+        // --- UPDATED: Dark Mode Toggle Event Listener ---
+        darkModeToggleCheckbox.addEventListener('change', () => {
+             const isDark = darkModeToggleCheckbox.checked;
+             applyTheme(isDark ? 'dark' : 'light');
+         });
+         // --- END: Dark Mode Toggle Event Listener Update ---
+
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent default form submission
+            console.log("--- Form Submit Event Triggered ---");
+
+            let firstInvalidTabIndex = -1;
+            let allValid = true;
+            // Validate all tabs before calculation
+            for (let i = 0; i < tabs.length; i++) {
+                if (!validateTab(i)) { // validateTab now handles shake animation
+                    allValid = false;
+                    if (firstInvalidTabIndex === -1) { // Record the first tab with an error
+                        firstInvalidTabIndex = i;
+                    }
+                }
+            }
+
+            console.log(`Overall validation status: ${allValid}`);
+
+            if (allValid) {
+                console.log("All tabs valid. Proceeding to calculation...");
+                try {
+                    resultDiv.style.display = 'none'; // Hide previous results immediately
+                    resultDiv.classList.remove('result-fade-in');
+                    const salaryResult = calculateSalary(); // Perform calculation
+                    if (salaryResult) {
+                        displayResults(salaryResult); // Display new results
+                    } else {
+                         console.error("Calculation function returned null or undefined.");
+                         alert("Calculation failed unexpectedly. Please check inputs or console.");
+                    }
+                } catch (error) {
+                    console.error("Error during salary calculation or display:", error);
+                    alert(`An error occurred: ${error.message || 'Please check inputs or try again.'}\n(Check browser console (F12) for more details)`);
+                    // Optionally display error in resultDiv
+                    resultDiv.innerHTML = `<p class="text-red-600 dark:text-red-500 p-4">Calculation Error: ${error.message}</p>`;
+                    resultDiv.style.display = 'block';
+                }
+            } else {
+                console.log(`Validation failed. Switching to first invalid tab: ${firstInvalidTabIndex}`);
+                if (firstInvalidTabIndex !== -1) {
+                    // Switch to the first tab with errors
+                    if(currentTab !== firstInvalidTabIndex) {
+                        switchTab(firstInvalidTabIndex);
+                    }
+                    // Focus the first error element after switching/shaking
+                    const firstErrorInput = tabs[firstInvalidTabIndex].querySelector('.error');
+                     if (firstErrorInput) {
+                         // Delay focus slightly to ensure tab switch/animation completes smoothly
+                         setTimeout(() => firstErrorInput.focus({ preventScroll: true }), 100);
+                     }
+                }
+                console.log("Calculation prevented due to validation errors.");
+            }
+        });
+
+        // --- Initial Setup Calls ---
+        loadTheme(); // Load theme preference first
+        updateRoles(); // Populate roles based on default domain
+        updateProgressBar(); // Set initial progress bar state
+        toggleMastersFields(); // Set visibility/requirement for masters fields
+         // Update initial placeholders for all score fields based on default radio buttons
+         handleScoreFormatChange({ target: document.getElementById('tenth_percentage') });
+         handleScoreFormatChange({ target: document.getElementById('twelfth_percentage') });
+         handleScoreFormatChange({ target: document.getElementById('degree_percentage') });
+         // Master's score placeholder handled within toggleMastersFields -> handleScoreFormatChange
+
+        console.log("Enhanced Calculator Initialized (Custom Themes + Transitions).");
+
+      }; // End window.onload
+    </script>
+
+</body>
+</html>
